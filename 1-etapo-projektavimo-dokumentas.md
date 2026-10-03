@@ -129,8 +129,7 @@ AI naudojau.
 |---|---|---|---|
 | Claude, idėjos detalizavimas | Pačią idėją - programą, parenkančią receptus pagal turimus produktus - sugalvojau pats. Claude naudojau jos detalizavimui: kaip suskaidyti funkcijas, kurios iš jų sudaro pagrindinį modulį ir kokios taisyklės turi sudaryti rikiavimo logiką | Atmečiau pasiūlymą receptų rikiavimą patikėti AI modeliui. Taisyklėmis grįstą sprendimą galiu paaiškinti ir patikrinti testais, o AI atsakymo - ne | Palyginau su užduoties reikalavimu, kad pagrindinis modulis turi turėti atskirai analizuojamų ir testuojamų taisyklių |
 | Claude, esamų sprendimų apžvalga | Panašių programų sąrašą ir jų funkcijų apžvalgą | Atmečiau teiginį, kad nei viena esama programa nevertina galiojimo terminų. Patikrinęs radau, kad tokių yra, tik funkcija mokama arba susieta su išmaniuoju šaldytuvu, todėl teiginį perrašiau | Funkcijas tikrinau pačiose programose ir jų aprašymuose parduotuvėse |
-| Claude, čekio atpažinimo galimybių paieška | Informaciją apie teksto atpažinimo paslaugas ir jų kainodarą, kuria pagrindžiau 7 skyriaus neaiškumą | Atmečiau trečiųjų šalių apžvalgose nurodytus nemokamų planų dydžius, nes jie nesutapo su pačių paslaugų skelbiama kainodara | Kainodarą tikrinau pačių paslaugų tinklalapiuose |
-| Claude, teksto redagavimas | Lietuvių kalbos gramatikos taisymą ir teksto trumpinimą | Perrašiau dalį sakinių, nes jie buvo per daug akademiniai ir neatitiko mano rašymo stiliaus | Perskaičiau visą tekstą ir įsitikinau, kad galiu paaiškinti kiekvieną teiginį |
+| Claude, darbo apimties svarstymas | Pagalbą sprendžiant, kurios funkcijos telpa į šio darbo apimtį, o kurių reikia atsisakyti | Iš pradžių čekio fotografavimo atsisakiau visiškai, bet vėliau grąžinau jį kaip neaiškumą, nes funkcijos vertė naudotojui didelė, o rizika aprašyta 7 skyriuje | Kiekvieną funkciją vertinau pagal tai, ar ji prisideda prie pagrindinio modulio ir ar galėčiau ją paaiškinti |
 
 ### Planuojamas AI naudojimas kuriant sistemą
 
