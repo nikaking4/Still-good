@@ -42,21 +42,23 @@ Antra problema - pasirinkimo gausa. Esami sprendimai pateikia ilgą receptų są
 
 **Logika, kurią reikės projektuoti ir testuoti:** Aibių palyginimas (recepto ingredientai prieš turimus produktus), skubumo balo skaičiavimas pagal likusias galiojimo dienas ir konfliktų sprendimas, kai keli receptai gauna vienodą balą.
 
-**Įvestis:** Turimų produktų sąrašas ir receptų rinkinys.
+**Įvestis:** Turimų produktų sąrašas (su kiekiais, jei jie nurodyti), receptų rinkinys su ingredientų kiekiais ir šiandienos data. Data perduodama kaip parametras, kad testų rezultatai nepriklausytų nuo paleidimo dienos.
 Pavyzdys: `[kiaušiniai (galioja po 1 d.), sūris (po 3 d.), pienas (po 5 d.), miltai (po 180 d.)]` ir 500 receptų.
 
 **Išvestis:** Surikiuotas receptų sąrašas su skubumo balu ir trūkstamais produktais.
 Pavyzdys: `1. Omletas su sūriu (balas 5, trūksta 0), 2. Blynai (balas 4, trūksta 0), 3. Sūrio pyragas (balas 5, trūksta 1: grietinė)`.
 
-**Veikimo eiga:** Produktams be datos priskiriamas numatytasis terminas → apskaičiuojamos likusios dienos → pagal ingredientų indeksą atrenkami receptai, turintys bent vieną turimą produktą → nustatoma, kiek produktų trūksta → atmetami receptai, kuriems trūksta daugiau nei dviejų → apskaičiuojamas skubumo balas → receptai surikiuojami.
+**Veikimo eiga:** Produktams be datos priskiriamas numatytasis terminas → apskaičiuojamos likusios dienos → pasibaigę produktai pažymimi ir neįskaičiuojami → pagal ingredientų indeksą atrenkami receptai, turintys bent vieną galiojantį produktą → nustatoma, kiek produktų trūksta arba kurių nepakanka kiekio → atmetami receptai, kuriems trūksta daugiau nei dviejų → apskaičiuojamas skubumo balas → receptai surikiuojami.
 
 ### Taisyklės
 
-1. Receptas laikomas pagaminamu, jei visi jo privalomi ingredientai yra produktų sąraše. Neprivalomi ingredientai (prieskoniai, papuošimui) į palyginimą neįtraukiami.
-2. Receptas, kuriam trūksta vieno ar dviejų privalomų ingredientų, rodomas atskiroje grupėje po pagaminamų receptų, nurodant, ko trūksta. Trūkstant trijų ar daugiau - nerodomas.
-3. Produkto skubumo balas pagal likusias dienas: 1 diena ar mažiau - 3 balai, 2-3 dienos - 2 balai, 4-7 dienos - 1 balas, daugiau nei 7 dienos - 0 balų. Recepto balas lygus jo sunaudojamų produktų balų sumai.
+1. Receptas laikomas pagaminamu, jei visi jo privalomi ingredientai yra produktų sąraše, nėra pasibaigę (6 taisyklė) ir jų pakanka (7 taisyklė). Neprivalomi ingredientai (prieskoniai, papuošimui) į palyginimą neįtraukiami.
+2. Receptas, kuriam trūksta vieno ar dviejų privalomų ingredientų, rodomas atskiroje grupėje po pagaminamų receptų, nurodant, ko trūksta. Jei ingredientas sąraše yra, bet pasibaigęs arba jo nepakanka, tai nurodoma prie jo: „pasibaigęs galiojimas" arba „nepakanka kiekio: dar X". Trūkstant trijų ar daugiau arba neturint nė vieno galiojančio ingrediento - nerodomas.
+3. Likusios dienos lygios galiojimo datai minus šiandienos data. Produkto skubumo balas pagal likusias dienas: 0-1 diena - 3 balai, 2-3 dienos - 2 balai, 4-7 dienos - 1 balas, daugiau nei 7 dienos - 0 balų. Recepto balas lygus jo sunaudojamų galiojančių produktų balų sumai. Produktas, kurio kiekio nepakanka, į balą įskaičiuojamas, nes receptas sunaudotų visą turimą kiekį.
 4. Jei galiojimo data nenurodyta, taikomas numatytasis terminas pagal produkto tipą (pienas - 5 dienos, mėsa - 3 dienos, konservai - 365 dienos), skaičiuojamas nuo įtraukimo dienos.
 5. Esant vienodam balui, pirmiau rodomas receptas, sunaudojantis daugiau turimų produktų. Jei ir tada vienodai - pagal trumpesnę gaminimo trukmę.
+6. Produktas, kurio likusių dienų skaičius neigiamas, laikomas pasibaigusiu: parinkime jis laikomas nesančiu sąraše ir balų neduoda. Produktas, galiojantis iki šiandienos (0 dienų), dar laikomas galiojančiu. Taisyklė taikoma ir numatytajai datai. Pasibaigę produktai sąraše pažymimi, bet automatiškai nešalinami, nes sistema negali žinoti, ar produktas tikrai sugedo.
+7. Kiekvienas produktas turi vieną matavimo vienetą (vnt., g arba ml), kurį naudoja ir receptai. Jei kiekis nurodytas, jo pakanka, kai visų galiojančių to paties produkto įrašų kiekių suma yra ne mažesnė už recepte nurodytą kiekį. Tokiu atveju balas skaičiuojamas pagal anksčiausiai baigiantį galioti įrašą. Jei bent vieno galiojančio įrašo kiekis nenurodytas, laikoma, kad produkto pakanka.
 
 ### Scenarijai būsimiems testams
 
@@ -65,6 +67,10 @@ Pavyzdys: `1. Omletas su sūriu (balas 5, trūksta 0), 2. Blynai (balas 4, trūk
 | Įprastas atvejis | 12 produktų: kiaušiniai galioja 1 d. (3 balai), sūris 3 d. (2 balai), likę ilgiau nei 7 d. (0 balų). Receptai: omletas su sūriu (kiaušiniai + sūris), blynai (kiaušiniai + pienas + miltai) | Atveriamas receptų ekranas | Pirma kortelė - omletas su sūriu (balas 5), antra - blynai (balas 3). Abu grupėje „galima pagaminti" |
 | Ribinis atvejis | Du receptai turi vienodą balą 3. Pirmasis sunaudoja 3 turimus produktus, antrasis - 5 | Atveriamas receptų ekranas | Pirmas rodomas receptas, sunaudojantis 5 produktus (5 taisyklė) |
 | Klaida arba neįmanomas rezultatas | Sąraše 3 produktai. Nėra recepto, kuriam trūktų 2 ar mažiau produktų | Atveriamas receptų ekranas | Kortelės nerodomos. Pateikiamas pranešimas, kad iš turimų produktų receptų nerasta, ir pasiūloma įtraukti daugiau produktų. Tuščias ekranas be paaiškinimo nerodomas |
+| Pasibaigęs galiojimas | Kiaušiniai 6 vnt. iki 2026-10-05 (-1 d.), sūris 200 g iki 2026-10-08 (2 d.), pienas 1000 ml iki 2026-10-20, miltai 1000 g iki 2027-03-01. Receptai: omletas su sūriu (kiaušiniai 3 vnt., sūris 100 g), sūrio padažas (sūris 100 g, pienas 300 ml, miltai 30 g) | Atveriamas receptų ekranas | 1. Sūrio padažas (balas 2, „galima pagaminti"). 2. Omletas su sūriu (balas 2, trūksta 1: kiaušiniai (pasibaigęs galiojimas)). Pagal ankstesnę taisyklę omletas būtų pirmas su balu 5 |
+| Ribinis atvejis: galioja šiandien | Kiaušiniai 4 vnt. iki 2026-10-06 (0 d.), sūris 200 g iki 2026-10-05 (-1 d.). Receptai: kiaušinienė (kiaušiniai 2 vnt.), omletas su sūriu (kiaušiniai 3 vnt., sūris 100 g) | Atveriamas receptų ekranas | 1. Kiaušinienė (balas 3, „galima pagaminti"). 2. Omletas su sūriu (balas 3, trūksta 1: sūris (pasibaigęs galiojimas)) |
+| Nepakankamas kiekis | Kiaušiniai 2 vnt. iki 2026-10-07 (1 d.), sūris 200 g iki 2026-10-09 (3 d.). Receptai: omletas su sūriu (kiaušiniai 3 vnt., sūris 100 g), kiaušinienė (kiaušiniai 2 vnt.) | Atveriamas receptų ekranas | 1. Kiaušinienė (balas 3, „galima pagaminti"). 2. Omletas su sūriu (balas 5, trūksta 1: kiaušiniai (nepakanka kiekio: dar 1 vnt.)). Omletas antras, nors jo balas didesnis |
+| Keli įrašai, vienas pasibaigęs | Kiaušiniai: 2 vnt. iki 2026-10-05 (-1 d.), 1 vnt. iki 2026-10-07 (1 d.), 1 vnt. iki 2026-10-15 (9 d.). Pienas 1000 ml iki 2026-10-20, miltai 1000 g iki 2027-03-01. Receptas: blynai (kiaušiniai 3 vnt., pienas 500 ml, miltai 200 g) | Atveriamas receptų ekranas | Blynai (balas 3, trūksta 1: kiaušiniai (nepakanka kiekio: dar 1 vnt.)). Galiojantys įrašai sudeda 2 vnt., pasibaigęs neįskaičiuojamas |
 
 **Jei modulis naudoja AI:** Pats pagrindinis modulis AI nenaudoja. Jis veikia pagal aiškiai apibrėžtas taisykles, todėl kiekvieną receptui priskirtą balą galima paaiškinti nurodant, kurios taisyklės buvo pritaikytos. Tai sąmoningas sprendimas - AI pagrįsto rikiavimo rezultato taip paaiškinti nebūtų galima.
 
@@ -130,6 +136,7 @@ AI naudojau.
 | Claude, idėjos detalizavimas | Pačią idėją - programą, parenkančią receptus pagal turimus produktus - sugalvojau pats. Claude naudojau jos detalizavimui: kaip suskaidyti funkcijas, kurios iš jų sudaro pagrindinį modulį ir kokios taisyklės turi sudaryti rikiavimo logiką | Atmečiau pasiūlymą receptų rikiavimą patikėti AI modeliui. Taisyklėmis grįstą sprendimą galiu paaiškinti ir patikrinti testais, o AI atsakymo - ne | Palyginau su užduoties reikalavimu, kad pagrindinis modulis turi turėti atskirai analizuojamų ir testuojamų taisyklių |
 | Claude, esamų sprendimų apžvalga | Panašių programų sąrašą ir jų funkcijų apžvalgą | Atmečiau teiginį, kad nei viena esama programa nevertina galiojimo terminų. Patikrinęs radau, kad tokių yra, tik funkcija mokama arba susieta su išmaniuoju šaldytuvu, todėl teiginį perrašiau | Funkcijas tikrinau pačiose programose ir jų aprašymuose parduotuvėse |
 | Claude, darbo apimties svarstymas | Pagalbą sprendžiant, kurios funkcijos telpa į šio darbo apimtį, o kurių reikia atsisakyti | Iš pradžių čekio fotografavimo atsisakiau visiškai, bet vėliau grąžinau jį kaip neaiškumą, nes funkcijos vertė naudotojui didelė, o rizika aprašyta 7 skyriuje | Kiekvieną funkciją vertinau pagal tai, ar ji prisideda prie pagrindinio modulio ir ar galėčiau ją paaiškinti |
+| Claude, dokumento patikrinimas po dėstytojo pastabų | Patikrinimą, ar įgyvendintos visos dėstytojo pastabos ir ar testų scenarijų laukiami rezultatai atitinka taisykles. Claude rado veikimo eigos ir 2 taisyklės neatitikimą bei neaprašytą atvejį 7 taisyklėje (kai dalies įrašų kiekis nenurodytas) | Taisymus apribojau minimaliais, kad dokumentas liktų lengvai skaitomas ir įgyvendinamas | Kiekvieną Claude pastabą peržiūrėjau pats ir taisiau tik tai, ką galėjau paaiškinti |
 
 ### Planuojamas AI naudojimas kuriant sistemą
 
@@ -145,8 +152,8 @@ AI naudojau.
 
 | Darbas | Apčiuopiamas rezultatas | Planuojama darbų seka |
 |---|---|---|
-| Receptų rinkinio ir terminų lentelės paruošimas | 50 receptų su struktūrizuotais ingredientais ir produktų kategorijų lentelė su numatytaisiais terminais | 1 |
-| Pagrindinio modulio įgyvendinimas | Veikianti parinkimo ir rikiavimo funkcija su visomis 5 taisyklėmis | 2 |
+| Receptų rinkinio ir terminų lentelės paruošimas | 50 receptų su struktūrizuotais ingredientais ir jų kiekiais ir produktų kategorijų lentelė su numatytaisiais terminais | 1 |
+| Pagrindinio modulio įgyvendinimas | Veikianti parinkimo ir rikiavimo funkcija su visomis 7 taisyklėmis | 2 |
 | Modulio testai | Automatiniai testai pagal 3 skyriuje aprašytus scenarijus, po vieną kiekvienai taisyklei | 3 |
 | Produktų sąrašas ir saugykla | Produktų įtraukimas, šalinimas ir išsaugojimas tarp paleidimų | 4 |
 | Sąsaja | Produktų ekranas ir receptų kortelių ekranas | 5 |
