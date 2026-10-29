@@ -30,8 +30,37 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# env files and secrets (keep .env.example as a template)
+.env
+.env.*
+!.env.example
+*.keystore
+*.cer
+*.crt
+*.der
+credentials*.json
+google-services.json
+GoogleService-Info.plist
+service-account*.json
+secrets/
+
+# AI assistant files (Claude and other agents)
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+.mcp.json
+
+# editors and OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+
+# logs and test output
+*.log
+coverage/
 
 # typescript
 *.tsbuildinfo
