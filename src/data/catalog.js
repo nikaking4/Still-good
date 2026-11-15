@@ -1,5 +1,3 @@
-// Default shelf life in days per product type (rule 4).
-// shortcut: guessed values, check against real package dates (section 7 risk) and adjust here.
 const CATEGORY_DAYS = {
   pienas: 5,
   mėsa: 3,
@@ -16,7 +14,6 @@ const CATEGORY_DAYS = {
   prieskoniai: 730,
 };
 
-// Closed product list: one name and one unit per product, shared by recipes (rule 7).
 const PRODUCTS = [
   ['pienas', 'ml', 'pienas'],
   ['grietinė', 'g', 'pienas'],
@@ -58,15 +55,12 @@ const PRODUCTS = [
   ['pipirai', 'g', 'prieskoniai'],
 ];
 
-// { name: { unit, days } } — the shape the core module expects.
 export const CATALOG = Object.fromEntries(
   PRODUCTS.map(([name, unit, category]) => [name, { unit, days: CATEGORY_DAYS[category] }]),
 );
 
 export const NAMES = PRODUCTS.map(([name]) => name);
 
-// One-tap grid on the products screen (section 4).
-// shortcut: guessed list, replace with real usage counts once there is data.
 export const FREQUENT = [
   'pienas', 'kiaušiniai', 'duona', 'sviestas', 'sūris', 'vištiena',
   'bulvės', 'svogūnai', 'pomidorai', 'obuoliai', 'bananai', 'makaronai',

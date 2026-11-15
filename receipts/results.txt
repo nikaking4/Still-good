@@ -1,0 +1,12 @@
+01.jpg: 4/4 found; wrongly found (user would untick): malta mėsa
+02.jpg: 4/4 found
+03.jpg: 4/4 found
+04.jpg: 5/5 found
+05.jpg: 3/4 found; wrongly found (user would untick): obuoliai
+06.jpg: 4/4 found
+07.jpg: 3/4 found
+08.jpg: 4/4 found
+09.jpg: 5/5 found
+10.jpg: 5/5 found; wrongly found (user would untick): miltai
+
+Total: 41/43 = 95 % (target 70 %): PASSED

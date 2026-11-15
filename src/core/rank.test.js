@@ -1,4 +1,4 @@
-import { rank } from './rank';
+import { points, rank } from './rank';
 import { consume } from './products';
 import { CATALOG } from '../data/catalog';
 import { RECIPES } from '../data/recipes';
@@ -17,7 +17,6 @@ const item = (name, expires, qty) => ({ name, added: '2026-10-01', expires, qty 
 const recipe = (name, ingredients, minutes = 10) => ({
   name, minutes, ingredients: ingredients.map(([n, qty = 1]) => ({ name: n, qty })),
 });
-// Compact view of a ranked result, close to how the design doc writes expected outcomes.
 const view = (list) => list.map((r) => [r.recipe.name, r.score, r.missing.map((m) => `${m.name}:${m.reason}${m.short ?? ''}`)]);
 
 test('scenario: usual case', () => {
@@ -34,7 +33,11 @@ test('scenario: usual case', () => {
 test('scenario: equal score → more products used first (rule 5)', () => {
   const products = [item('kiaušiniai', '2026-10-07'), ...'abcd'.split('').map((n) => item(n, '2027-01-01'))];
   const recipes = [recipe('Trys', [['kiaušiniai'], ['a'], ['b']]), recipe('Penki', [['kiaušiniai'], ['a'], ['b'], ['c'], ['d']])];
-  expect(view(rank(products, recipes, TODAY, catalog)).map((r) => r[0])).toEqual(['Penki', 'Trys']);
+  expect(view(rank(products, recipes, TODAY, catalog))).toEqual([['Penki', 3, []], ['Trys', 3, []]]);
+});
+
+test('rule 3: urgency points by remaining days, including band edges', () => {
+  expect([0, 1, 2, 3, 4, 7, 8, 30].map(points)).toEqual([3, 3, 2, 2, 1, 1, 0, 0]);
 });
 
 test('equal score and products → shorter cooking time first (rule 5)', () => {
@@ -91,8 +94,8 @@ test('scenario: several entries, one expired', () => {
 });
 
 test('rule 4: default term counted from the day added, and it can expire', () => {
-  const fresh = { name: 'pienas', added: '2026-10-02' }; // +5 → 10-07, 1 day left → 3 points
-  const old = { name: 'pienas', added: '2026-09-25' }; // +5 → 09-30, expired
+  const fresh = { name: 'pienas', added: '2026-10-02' };
+  const old = { name: 'pienas', added: '2026-09-25' };
   const recipes = [recipe('Pienas', [['pienas']])];
   expect(view(rank([fresh], recipes, TODAY, catalog))).toEqual([['Pienas', 3, []]]);
   expect(view(rank([old], recipes, TODAY, catalog))).toEqual([]);
@@ -126,10 +129,16 @@ test('consume: takes from earliest valid entry, skips expired, removes entries w
   expect(consume(products, cooked, TODAY, catalog).map((p) => [p.id, p.qty])).toEqual([[1, 2], [3, 3], [5, 1000]]);
 });
 
-test('data: every recipe ingredient is in the closed product list with a quantity', () => {
+test('data: every recipe has steps, and every ingredient is in the closed product list with a quantity', () => {
   for (const r of RECIPES) {
+    expect([r.name, r.steps?.length > 0]).toEqual([r.name, true]);
     for (const i of r.ingredients) {
       expect([r.name, i.name, i.name in CATALOG, i.qty > 0]).toEqual([r.name, i.name, true, true]);
     }
   }
+});
+
+test('data: 50 recipes with unique names (design doc section 7)', () => {
+  expect(RECIPES).toHaveLength(50);
+  expect(new Set(RECIPES.map((r) => r.name)).size).toBe(50);
 });

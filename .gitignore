@@ -68,3 +68,6 @@ coverage/
 # generated native folders
 /ios
 /android
+
+# OCR language data downloaded by the receipt test (3.7 MB, re-downloaded when missing)
+receipts/*.traineddata
